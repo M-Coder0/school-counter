@@ -12,54 +12,69 @@
             direction: rtl;
             text-align: right;
         }
+        /* تعديل لعرض العناوين بشكل أفضل في الشاشات الكبيرة */
+        @media (min-width: 640px) {
+            .card-title {
+                min-height: 3rem; /* يضمن مساحة ثابتة للعنوان */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <!-- العداد التنازلي لنهاية العام الدراسي (مربع 1) -->
-    <div class="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">العداد التنازلي لنهاية العام الدراسي</h2>
-        <div id="countdown-timer-total" class="text-center text-4xl font-extrabold text-green-600">
+    <!-- العداد التنازلي لنهاية العام الدراسي (مربع علوي كامل العرض) -->
+    <div class="bg-white rounded-xl shadow-xl p-6 max-w-5xl w-full mb-6 border-b-4 border-green-500">
+        <h2 class="text-2xl font-extrabold text-gray-800 mb-4 text-center">العداد التنازلي لنهاية العام الدراسي</h2>
+        <div id="countdown-timer-total" class="text-center text-5xl font-extrabold text-green-600">
             جارٍ التحميل...
         </div>
     </div>
 
-    <!-- عداد الأيام المتبقية لنهاية الفصل الأول (مربع 2) -->
-    <div class="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">المتبقي على إجازة منتصف العام (الترم الأول)</h2>
+    <!-- حاوية البلوكات السفلية: تصير عمودين في الشاشات الكبيرة -->
+    <!-- هذا هو السطر اللي يخلي البلوكات جنب بعض في اللابتوب وفوق بعض في الجوال -->
+    <div class="md:grid md:grid-cols-2 md:gap-6 max-w-5xl w-full">
         
-        <div class="mb-4">
-            <div class="text-center text-xl text-gray-700 font-medium">
-                الأيام الدراسية الفعلية المتبقية:
+        <!-- عداد الأيام المتبقية لنهاية الفصل الأول (مربع 2) -->
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full mb-6 md:mb-0 border-b-4 border-red-500">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 text-center card-title">المتبقي على إجازة منتصف العام (الترم الأول)</h2>
+            
+            <div class="mb-4 pt-2 border-b pb-4">
+                <div class="text-center text-lg text-gray-700 font-medium">
+                    الأيام الدراسية الفعلية المتبقية:
+                </div>
+                <div id="countdown-term1-school-days" class="text-center text-5xl font-extrabold text-red-600 mt-1">
+                    --
+                </div>
             </div>
-            <div id="countdown-term1-school-days" class="text-center text-5xl font-extrabold text-red-600 mt-1">
-                --
+
+            <div>
+                <div class="text-center text-lg text-gray-700 font-medium">
+                    الأيام الكلية المتبقية (أيام دراسة + إجازات):
+                </div>
+                <div id="countdown-term1-total-days" class="text-center text-3xl font-bold text-red-400 mt-1">
+                    --
+                </div>
             </div>
         </div>
 
-        <div>
-            <div class="text-center text-xl text-gray-700 font-medium">
-                الأيام الكلية المتبقية:
+        <!-- حسّابة الأيام الدراسية الماضية (مربع 3) -->
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full border-b-4 border-blue-500">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 text-center card-title">حسّابة الأيام الدراسية الماضية</h2>
+            <div class="text-center text-xl text-gray-700">
+                <span class="text-gray-900 font-bold">نسبة الأيام الدراسية المكتملة:</span>
             </div>
-            <div id="countdown-term1-total-days" class="text-center text-3xl font-bold text-red-400 mt-1">
-                --
+            <div class="text-center text-6xl font-extrabold text-blue-600 mt-2">
+                <span id="school-day-counter">0</span>
+                <span class="text-3xl font-normal text-gray-400">/ 180</span>
+            </div>
+            <div class="text-center text-sm font-medium text-gray-500 mt-2">
+                (إجمالي أيام الترم الأول: 83 يوم دراسي فعلي)
             </div>
         </div>
-    </div>
 
-    <!-- حسّابة الأيام الدراسية الماضية (مربع 3) -->
-    <div class="bg-white rounded-xl shadow-lg p-6 max-w-lg w-full">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">حسّابة الأيام الدراسية الماضية</h2>
-        <div class="text-center text-xl text-gray-700">
-            <span class="text-gray-900 font-bold">عدد الأيام الدراسية التي اكتملت:</span>
-        </div>
-        <div class="text-center text-6xl font-extrabold text-blue-600 mt-2">
-            <span id="school-day-counter">0</span>
-            <span class="text-3xl font-normal text-gray-400">/ 180</span>
-        </div>
-        <div class="text-center text-sm font-medium text-gray-500 mt-2">
-            (إجمالي أيام الترم الأول: 83 يوم دراسي فعلي)
-        </div>
     </div>
 
     <script>
@@ -200,7 +215,7 @@
                 // End check is the last school day
                 const endCheckDate = new Date(LAST_SCHOOL_DAY_TERM1);
 
-                // Check today for remaining days counter
+                // Check today for remaining school days counter
                 if (!isHoliday(now) && now <= LAST_SCHOOL_DAY_TERM1) {
                     schoolDaysRemaining++;
                 }
