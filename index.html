@@ -5,17 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>العداد الدراسي</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تضمين أيقونات Lucide لاستخدام أيقونة الشمس/القمر -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
     <style>
+        /* تعريف الألوان لكل وضع */
+        :root {
+            /* Light Mode */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --muted-text: #6b7280;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            /* Dark Mode */
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --text-color: #f9fafb;
+            --muted-text: #9ca3af;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
             direction: rtl;
             text-align: right;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
+
+        .card {
+            background-color: var(--card-bg);
+            box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .card-title {
+            color: var(--text-color);
+        }
+
         /* تعديل لعرض العناوين بشكل أفضل في الشاشات الكبيرة */
         @media (min-width: 640px) {
             .card-title {
-                min-height: 3rem; /* يضمن مساحة ثابتة للعنوان */
+                min-height: 3rem;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -25,237 +59,266 @@
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
+    <!-- زر تبديل الوضع (Dark Mode) - تم إرجاعه للموقع الأصلي -->
+    <div class="fixed top-4 left-4 z-10">
+        <button id="theme-toggle" class="p-3 rounded-full bg-gray-200 text-gray-800 dark-mode-bg:bg-gray-700 dark-mode-bg:text-gray-100 shadow-md transition-colors duration-300">
+            <!-- سيتم إضافة أيقونة الشمس/القمر هنا بالـ JS -->
+        </button>
+    </div>
+
+    <!-- لإضافة مسافة أعلى الصفحة بعد إضافة الأزرار الثابتة -->
+    <div class="pt-2"></div>
+
     <!-- العداد التنازلي لنهاية العام الدراسي (مربع علوي كامل العرض) -->
-    <div class="bg-white rounded-xl shadow-xl p-6 max-w-5xl w-full mb-6 border-b-4 border-green-500">
-        <h2 class="text-2xl font-extrabold text-gray-800 mb-4 text-center">العداد التنازلي لنهاية العام الدراسي</h2>
-        <div id="countdown-timer-total" class="text-center text-5xl font-extrabold text-green-600">
+    <div class="card rounded-xl p-6 max-w-5xl w-full mb-6 border-b-4 border-green-500">
+        <h2 class="text-2xl font-extrabold card-title mb-4 text-center">العداد التنازلي لنهاية العام الدراسي</h2>
+        <div id="countdown-timer-total" class="text-center text-5xl font-extrabold text-green-500">
             جارٍ التحميل...
         </div>
     </div>
 
     <!-- حاوية البلوكات السفلية: تصير عمودين في الشاشات الكبيرة -->
-    <!-- هذا هو السطر اللي يخلي البلوكات جنب بعض في اللابتوب وفوق بعض في الجوال -->
     <div class="md:grid md:grid-cols-2 md:gap-6 max-w-5xl w-full">
         
         <!-- عداد الأيام المتبقية لنهاية الفصل الأول (مربع 2) -->
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full mb-6 md:mb-0 border-b-4 border-red-500">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 text-center card-title">المتبقي على إجازة منتصف العام (الترم الأول)</h2>
+        <div class="card rounded-xl p-6 w-full mb-6 md:mb-0 border-b-4 border-red-500">
+            <h2 class="text-xl font-bold card-title mb-4 text-center">المتبقي على إجازة منتصف العام (الترم الأول)</h2>
             
-            <div class="mb-4 pt-2 border-b pb-4">
-                <div class="text-center text-lg text-gray-700 font-medium">
+            <!-- تم إرجاع هذا الجزء بناءً على طلبك -->
+            <div class="pt-2 border-b pb-4">
+                <div class="text-center text-lg card-title font-medium">
                     الأيام الدراسية الفعلية المتبقية:
                 </div>
-                <div id="countdown-term1-school-days" class="text-center text-5xl font-extrabold text-red-600 mt-1">
-                    --
+                <div class="text-center mt-1">
+                    <span id="countdown-term1-school-days" class="text-5xl font-extrabold text-red-500">--</span>
+                    <!-- تم تغيير لون النص لـ red-500 -->
+                    <span id="term1-total-days" class="text-3xl font-normal text-red-500">/ 83</span>
                 </div>
             </div>
-
-            <div>
-                <div class="text-center text-lg text-gray-700 font-medium">
-                    الأيام الكلية المتبقية (أيام دراسة + إجازات):
+            
+            <div class="mt-4">
+                <div class="text-center text-lg text-muted-text font-medium">
+                    الأيام الكلية المتبقية (دراسة + إجازات):
                 </div>
-                <div id="countdown-term1-total-days" class="text-center text-3xl font-bold text-red-400 mt-1">
-                    --
+                <!-- سيتم عرض القيمة هنا بناءً على التحديث الجديد -->
+                <div id="countdown-term1-total-days" class="text-center text-3xl font-bold text-red-500 mt-1">
+                    -- يوم
                 </div>
             </div>
         </div>
 
         <!-- حسّابة الأيام الدراسية الماضية (مربع 3) -->
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full border-b-4 border-blue-500">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 text-center card-title">حسّابة الأيام الدراسية الماضية</h2>
-            <div class="text-center text-xl text-gray-700">
-                <span class="text-gray-900 font-bold">نسبة الأيام الدراسية المكتملة:</span>
+        <div class="card rounded-xl p-6 w-full border-b-4 border-blue-500">
+            <h2 class="text-xl font-bold card-title mb-4 text-center">حسّابة الأيام الدراسية الماضية</h2>
+            <div class="text-center text-xl card-title">
+                <span class="card-title font-bold">نسبة الأيام الدراسية المكتملة:</span>
             </div>
-            <div class="text-center text-6xl font-extrabold text-blue-600 mt-2">
+            <div class="text-center text-6xl font-extrabold text-blue-500 mt-2">
                 <span id="school-day-counter">0</span>
-                <span class="text-3xl font-normal text-gray-400">/ 180</span>
+                <span class="text-3xl font-normal text-muted-text">/ 180</span>
             </div>
-            <div class="text-center text-sm font-medium text-gray-500 mt-2">
-                (إجمالي أيام الترم الأول: 83 يوم دراسي فعلي)
+            <div class="text-center text-sm font-medium text-muted-text mt-2">
+                (إجمالي أيام العام الدراسي 180 يوم دراسي فعلي)
             </div>
         </div>
 
     </div>
 
     <script>
+        // --- متغيرات التواريخ والحسابات ---
+        const END_DATE_YEAR = new Date('2026-07-02T07:00:00'); 
+        const START_DATE_YEAR = new Date('2025-08-31T00:00:00'); 
+        const LAST_SCHOOL_DAY_TERM1 = new Date('2026-01-08T00:00:00'); 
+        const TOTAL_SCHOOL_DAYS_TERM1 = 83; // الإجمالي الفعلي لأيام الترم الأول
+
+        const holidays = [
+            // الإجازات حتى نهاية العام
+            { start: new Date('2025-09-23T00:00:00'), end: new Date('2025-09-23T23:59:59') },
+            { start: new Date('2025-10-12T00:00:00'), end: new Date('2025-10-12T23:59:59') },
+            { start: new Date('2025-11-21T00:00:00'), end: new Date('2025-11-29T23:59:59') }, 
+            { start: new Date('2025-12-11T00:00:00'), end: new Date('2025-12-14T23:59:59') },
+            { start: new Date('2026-01-09T00:00:00'), end: new Date('2026-01-17T23:59:59') }, // إجازة منتصف العام (بعد الترم الأول)
+            { start: new Date('2026-02-22T00:00:00'), end: new Date('2026-02-22T23:59:59') },
+            { start: new Date('2026-03-06T00:00:00'), end: new Date('2026-03-28T23:59:59') },
+            { start: new Date('2026-05-15T00:00:00'), end: new Date('2026-06-01T23:59:59') }
+        ];
+
+        // --- دوال الأدوات المساعدة ---
+        const isDateBetween = (date, start, end) => {
+            const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+            const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+            return d >= s && d <= e;
+        };
+
+        const isHoliday = (date, includeWeekend = true) => {
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 5 = Friday, 6 = Saturday
+            if (includeWeekend && (dayOfWeek === 5 || dayOfWeek === 6)) {
+                return true;
+            }
+            for (let holiday of holidays) {
+                if (isDateBetween(date, holiday.start, holiday.end)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        // --- تحديث العدادات ---
+        const updateCountdownTotal = (countdownTotalEl) => {
+            const now = new Date();
+            const timeLeft = END_DATE_YEAR.getTime() - now.getTime();
+            const oneDayInMs = 1000 * 60 * 60 * 24;
+
+            if (timeLeft <= 0) {
+                countdownTotalEl.textContent = 'انتهى العام الدراسي!';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / oneDayInMs);
+            if (days < 1) { 
+                const hours = Math.floor((timeLeft % oneDayInMs) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                countdownTotalEl.textContent = `متبقي ${hours} ساعة، ${minutes} دقيقة، ${seconds} ثانية`;
+            } else {
+                countdownTotalEl.textContent = `متبقي ${days} يوم`;
+            }
+        };
+
+        const updateSchoolDayCounter = (schoolDayCounterEl) => {
+            const now = new Date();
+            let schoolDays = 0;
+            if (now < START_DATE_YEAR) {
+                schoolDayCounterEl.textContent = '0';
+                return;
+            }
+            
+            const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let checkDate = new Date(START_DATE_YEAR);
+            
+            while (checkDate <= todayMidnight) {
+                if (!isHoliday(checkDate)) {
+                    schoolDays++;
+                }
+                checkDate.setDate(checkDate.getDate() + 1);
+            }
+            schoolDayCounterEl.textContent = schoolDays;
+        };
+        
+        // ** دالة التحديث للترم الأول (تم إرجاعها) **
+        const updateTerm1Countdown = (countdownTerm1SchoolEl, countdownTerm1TotalEl) => {
+            const now = new Date();
+            let schoolDaysRemaining = 0;
+            
+            if (now > LAST_SCHOOL_DAY_TERM1) {
+                countdownTerm1SchoolEl.textContent = '0'; // انتهى الترم
+                countdownTerm1TotalEl.textContent = '0 يوم';
+                return;
+            }
+
+            // حساب الأيام الدراسية المتبقية
+            let currentDate = new Date(now);
+            currentDate.setHours(0, 0, 0, 0); 
+            const endCheckDate = new Date(LAST_SCHOOL_DAY_TERM1);
+            endCheckDate.setHours(0, 0, 0, 0);
+
+            // نعد اليوم الحالي إذا كان يوم دراسة
+            if (!isHoliday(now)) {
+                 schoolDaysRemaining++;
+            }
+            
+            // نعد من اليوم التالي حتى نهاية الترم
+            currentDate.setDate(currentDate.getDate() + 1);
+            while (currentDate <= endCheckDate) {
+                if (!isHoliday(currentDate)) {
+                    schoolDaysRemaining++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            // حساب الأيام الكلية المتبقية (دراسة + إجازات)
+            const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const totalDaysFromToday = Math.ceil((LAST_SCHOOL_DAY_TERM1.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+            
+            countdownTerm1SchoolEl.textContent = schoolDaysRemaining;
+            countdownTerm1TotalEl.textContent = `${totalDaysFromToday} يوم`;
+        };
+
+        // --- الوضع الداكن (Dark Mode) ---
+        // دالة يتم استدعاؤها في أي وقت نحتاج فيه إلى تحديث الثيم
+        const applyTheme = (isDark, body, toggleButton) => {
+            const lucideIcons = lucide.icons;
+
+            if (isDark) {
+                body.classList.add('dark-mode');
+                toggleButton.innerHTML = lucideIcons['sun'] ? lucideIcons['sun'].toMarkup() : ''; 
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                toggleButton.innerHTML = lucideIcons['moon'] ? lucideIcons['moon'].toMarkup() : '';
+                localStorage.setItem('theme', 'light');
+            }
+        };
+
+
+        const setupDarkMode = () => {
+            lucide.createIcons(); 
+            
+            const body = document.body;
+            const toggleButton = document.getElementById('theme-toggle');
+            
+            const savedTheme = localStorage.getItem('theme');
+            let isDark;
+
+            if (savedTheme === 'dark') {
+                isDark = true;
+            } else if (savedTheme === 'light') {
+                isDark = false;
+            } else {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            applyTheme(isDark, body, toggleButton);
+
+            toggleButton.addEventListener('click', () => {
+                const isCurrentlyDark = body.classList.contains('dark-mode');
+                applyTheme(!isCurrentlyDark, body, toggleButton);
+            });
+            
+        };
+
+
+        // --- التشغيل بعد تحميل الصفحة ---
         document.addEventListener('DOMContentLoaded', () => {
-
-            // The list of official holidays in Gregorian dates
-            const holidays = [
-                // Holidays up to the end of Term 1
-                { start: new Date('2025-09-23T00:00:00'), end: new Date('2025-09-23T23:59:59') },
-                { start: new Date('2025-10-12T00:00:00'), end: new Date('2025-10-12T23:59:59') },
-                { start: new Date('2025-11-21T00:00:00'), end: new Date('2025-11-29T23:59:59') }, // إجازة الخريف
-                { start: new Date('2025-12-11T00:00:00'), end: new Date('2025-12-14T23:59:59') }, // إجازة إضافية
-                
-                // Term 1 Mid-Year Holiday (Excluded from total school days calculation)
-                { start: new Date('2026-01-09T00:00:00'), end: new Date('2026-01-17T23:59:59') }, 
-                
-                // Holidays after Term 1 (Still needed for the total year school day counter)
-                { start: new Date('2026-02-22T00:00:00'), end: new Date('2026-02-22T23:59:59') },
-                { start: new Date('2026-03-06T00:00:00'), end: new Date('2026-03-28T23:59:59') },
-                { start: new Date('2026-05-15T00:00:00'), end: new Date('2026-06-01T23:59:59') }
-            ];
-
+            // تهيئة الوضع الداكن أولاً
+            setupDarkMode(); 
+            
             const countdownTotalEl = document.getElementById('countdown-timer-total');
-            const countdownTerm1SchoolEl = document.getElementById('countdown-term1-school-days');
+            const countdownTerm1SchoolEl = document.getElementById('countdown-term1-school-days'); // تم إرجاعه
             const countdownTerm1TotalEl = document.getElementById('countdown-term1-total-days');
             const schoolDayCounterEl = document.getElementById('school-day-counter');
 
-            // Global Dates
-            const END_DATE_YEAR = new Date('2026-07-02T07:00:00'); // نهاية العام (مع تحديد الساعة 7 صباحاً)
-            const START_DATE_YEAR = new Date('2025-08-31T00:00:00'); // بداية العام
-            const LAST_SCHOOL_DAY_TERM1 = new Date('2026-01-08T00:00:00'); // آخر يوم دراسي في الترم الأول
+            // تحديث فوري
+            updateCountdownTotal(countdownTotalEl);
+            updateSchoolDayCounter(schoolDayCounterEl);
+            // تم إرجاع الاستدعاء الأصلي
+            updateTerm1Countdown(countdownTerm1SchoolEl, countdownTerm1TotalEl); 
 
-            // Helper function to check if a date is between two dates (inclusive)
-            const isDateBetween = (date, start, end) => {
-                const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-                const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-                return d >= s && d <= e;
-            };
-
-            const isHoliday = (date, includeWeekend = true) => {
-                const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday... 6 = Saturday
-
-                // Check for weekends (Friday = 5, Saturday = 6)
-                if (includeWeekend && (dayOfWeek === 5 || dayOfWeek === 6)) {
-                    return true;
-                }
-                
-                // Check for official holidays
-                for (let holiday of holidays) {
-                    if (isDateBetween(date, holiday.start, holiday.end)) {
-                        return true;
-                    }
-                }
-                return false;
-            };
-            
-            // Utility function to get yesterday's date at midnight
-            const getYesterdayMidnight = (now) => {
-                const yesterday = new Date(now);
-                yesterday.setDate(now.getDate() - 1);
-                yesterday.setHours(0, 0, 0, 0);
-                return yesterday;
-            };
-
-            // --- 1. تحديث العداد التنازلي لنهاية العام ---
-            const updateCountdownTotal = () => {
+            // تحديث مستمر كل ثانية
+            window.countdownInterval = setInterval(() => {
+                updateCountdownTotal(countdownTotalEl);
+                // تحديث عدادات الأيام (لا يحتاج تحديث كل ثانية)
                 const now = new Date();
-                const timeLeft = END_DATE_YEAR.getTime() - now.getTime();
-                const oneDayInMs = 1000 * 60 * 60 * 24;
-
-                if (timeLeft <= 0) {
-                    countdownTotalEl.textContent = 'انتهى العام الدراسي! ألف مبروك.';
-                    return;
+                if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() < 1) {
+                    updateSchoolDayCounter(schoolDayCounterEl);
+                    updateTerm1Countdown(countdownTerm1SchoolEl, countdownTerm1TotalEl); // تم إرجاع الاستدعاء الأصلي
                 }
-
-                const days = Math.floor(timeLeft / oneDayInMs);
-                
-                if (days < 1) { 
-                    const hours = Math.floor((timeLeft % oneDayInMs) / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    countdownTotalEl.textContent = `متبقي ${hours} ساعة، ${minutes} دقيقة، ${seconds} ثانية`;
-                } else {
-                    countdownTotalEl.textContent = `متبقي ${days} يوم`;
-                }
-            };
-
-            // --- 2. تحديث عداد الأيام الدراسية الماضية (العداد السفلي) ---
-            const updateSchoolDayCounter = () => {
-                const now = new Date();
-                let schoolDays = 0;
-                let currentDate = new Date(START_DATE_YEAR);
-                currentDate.setHours(0, 0, 0, 0); // Start of day
-
-                if (now < START_DATE_YEAR) {
-                    schoolDayCounterEl.textContent = '0';
-                    return;
-                }
-                
-                // Loop up to the last completed day (yesterday at midnight)
-                const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-                // We must calculate days passed until TODAY. If today is an off day, 
-                // the count will reflect the last school day completed.
-                let checkDate = new Date(START_DATE_YEAR);
-                
-                while (checkDate <= todayMidnight) {
-                    if (!isHoliday(checkDate)) {
-                        schoolDays++;
-                    }
-                    checkDate.setDate(checkDate.getDate() + 1);
-                }
-
-                // If today is an off day (like Nov 1st), the counter will show 42 (the last completed day).
-                // If today is a school day, the counter will show 43 (the current day).
-                schoolDayCounterEl.textContent = schoolDays;
-            };
-
-
-            // --- 3. تحديث عدادات المتبقي لنهاية الترم الأول (المربع الأوسط) ---
-            const updateTerm1Countdown = () => {
-                const now = new Date();
-                let totalDaysRemaining = 0;
-                let schoolDaysRemaining = 0;
-                
-                if (now > LAST_SCHOOL_DAY_TERM1) {
-                    countdownTerm1SchoolEl.textContent = 'انتهى الترم الأول';
-                    countdownTerm1TotalEl.textContent = '0 يوم';
-                    return;
-                }
-
-                // Start checking from tomorrow
-                let currentDate = new Date(now);
-                currentDate.setDate(currentDate.getDate() + 1);
-                currentDate.setHours(0, 0, 0, 0); 
-                
-                // End check is the last school day
-                const endCheckDate = new Date(LAST_SCHOOL_DAY_TERM1);
-
-                // Check today for remaining school days counter
-                if (!isHoliday(now) && now <= LAST_SCHOOL_DAY_TERM1) {
-                    schoolDaysRemaining++;
-                }
-                
-                // Loop from tomorrow until the last school day
-                while (currentDate <= endCheckDate) {
-                    // 3.1. Calculate total days remaining
-                    totalDaysRemaining++;
-
-                    // 3.2. Calculate school days remaining (must not be a holiday OR weekend)
-                    if (!isHoliday(currentDate)) {
-                        schoolDaysRemaining++;
-                    }
-
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-
-                // Add today's date to total remaining days for accurate visual count
-                const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                const totalDaysFromToday = Math.ceil((LAST_SCHOOL_DAY_TERM1.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-                
-                countdownTerm1SchoolEl.textContent = schoolDaysRemaining;
-                countdownTerm1TotalEl.textContent = `${totalDaysFromToday} يوم`;
-            };
-
-            // Update the timers
-            const interval = setInterval(() => {
-                updateCountdownTotal();
-                updateSchoolDayCounter();
-                updateTerm1Countdown();
             }, 1000);
 
-            // Initial call to set the values immediately
-            updateCountdownTotal();
-            updateSchoolDayCounter();
-            updateTerm1Countdown();
-
-            // Clear the interval when the total countdown finishes
+            // مسح الـ Interval عند انتهاء العام
             if (new Date() >= END_DATE_YEAR) {
-                clearInterval(interval);
+                clearInterval(window.countdownInterval);
             }
         });
     </script>
