@@ -1,203 +1,261 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>العداد الدراسي المطور</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-color: #1f2937;
-            --muted-text: #6b7280;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            --bg-color: #121826;
+            --card-bg: #1f2937;
+            --primary-green: #10b981;
+            --primary-orange: #f59e0b;
+            --primary-blue: #3b82f6;
+            --text-main: #ffffff;
+            --text-sub: #9ca3af;
         }
 
-        .dark-mode {
-            --bg-color: #111827;
-            --card-bg: #1f2937;
-            --text-color: #f9fafb;
-            --muted-text: #9ca3af;
-            --shadow-color: rgba(0, 0, 0, 0.5);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            direction: rtl;
-            text-align: right;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* تنسيق البطاقات */
         .card {
             background-color: var(--card-bg);
-            box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
-            transition: background-color 0.3s, box-shadow 0.3s;
+            border-radius: 15px;
+            padding: 25px 25px 25px 15px; /* مساحة إضافية لليسار بسبب الدائرة */
+            position: relative;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-bottom: 5px solid transparent;
         }
 
+        .card.green { border-color: var(--primary-green); }
+        .card.orange { border-color: var(--primary-orange); }
+        .card.blue { border-color: var(--primary-blue); }
+
         .card-title {
-            color: var(--text-color);
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* الدائرة البيضاء الجانبية */
+        .side-circle {
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            color: #121826;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        .side-circle .label {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .side-circle .val {
+            font-size: 1.3rem;
+            font-weight: 900;
+        }
+
+        /* نظام المربعات الثلاثة - الترتيب المحدث */
+        .split-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .split-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .split-box .unit {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-weight: 400;
+        }
+
+        .split-box .number {
+            font-size: 2.2rem; /* تكبير الأرقام */
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .green .split-box .number { color: var(--primary-green); }
+        .orange .split-box .number { color: var(--primary-orange); }
+
+        /* تنسيق البطاقة الوسطى */
+        .full-stat {
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            margin: 10px 0;
+        }
+
+        .sub-text {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+
+        /* التجاوب مع الجوال */
+        @media (max-width: 480px) {
+            .side-circle {
+                width: 65px;
+                height: 65px;
+                left: -20px;
+            }
+            .side-circle .val { font-size: 1.1rem; }
+            .split-box .number { font-size: 1.8rem; }
+            .full-stat { font-size: 2.5rem; }
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body>
 
-    <div class="fixed top-4 left-4 z-10">
-        <button id="theme-toggle" class="p-3 rounded-full bg-gray-200 text-gray-800 dark-mode-bg:bg-gray-700 dark-mode-bg:text-gray-100 shadow-md transition-colors duration-300"></button>
-    </div>
-
-    <div class="pt-2"></div>
-
-    <!-- العداد التنازلي لنهاية العام الدراسي (الوقت الكلي بما فيه الإجازات) -->
-    <div class="card rounded-xl p-6 max-w-5xl w-full mb-6 border-b-4 border-green-500">
-        <h2 class="text-2xl font-extrabold card-title mb-4 text-center">العداد التنازلي لنهاية العام الدراسي</h2>
-        <div id="countdown-timer-total" class="text-center text-5xl font-extrabold text-green-500">
-            جارٍ التحميل...
+<div class="container">
+    
+    <!-- البطاقة الأولى: العداد لنهاية العام -->
+    <div class="card green" id="card-total">
+        <div class="side-circle">
+            <span class="label">باقي</span>
+            <span class="val" id="circle-total-days">--</span>
         </div>
-    </div>
-
-    <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- حسّابة الأيام الدراسية المكتملة -->
-        <div class="card rounded-xl p-6 w-full border-b-4 border-blue-500">
-            <h2 class="text-xl font-bold card-title mb-4 text-center">الأيام الدراسية المكتملة</h2>
-            <div class="text-center text-xl card-title">
-                <span class="card-title font-bold">مضى من الدراسة:</span>
+        <div class="card-title">العداد التنازلي لنهاية العام الدراسي</div>
+        <div class="split-grid">
+            <!-- اليمين: أيام -->
+            <div class="split-box">
+                <span class="unit">أيام</span>
+                <span class="number" id="total-days-rem">0</span>
             </div>
-            <div class="text-center text-6xl font-extrabold text-blue-500 mt-2">
-                <span id="school-day-counter">0</span>
-                <span class="text-3xl font-normal text-muted-text">/ 180</span>
+            <!-- الوسط: أسابيع -->
+            <div class="split-box">
+                <span class="unit">أسابيع</span>
+                <span class="number" id="total-weeks">0</span>
             </div>
-            <div class="text-center text-sm font-medium text-muted-text mt-2">
-                يوم دراسي فعلي مر حتى الآن
-            </div>
-        </div>
-
-        <!-- حسّابة الأيام الدراسية المتبقية -->
-        <div class="card rounded-xl p-6 w-full border-b-4 border-orange-500">
-            <h2 class="text-xl font-bold card-title mb-4 text-center">الأيام الدراسية المتبقية</h2>
-            <div class="text-center text-xl card-title">
-                <span class="card-title font-bold">باقي على الـ 180 يوم:</span>
-            </div>
-            <div class="text-center text-6xl font-extrabold text-orange-500 mt-2">
-                <span id="remaining-school-days">0</span>
-                <span class="text-3xl font-normal text-muted-text">يوم</span>
-            </div>
-            <div class="text-center text-sm font-medium text-muted-text mt-2">
-                عدد الأيام الدراسية المتبقية (بدون الويكند والإجازات)
+            <!-- اليسار: شهور -->
+            <div class="split-box">
+                <span class="unit">شهور</span>
+                <span class="number" id="total-months">0</span>
             </div>
         </div>
     </div>
 
-    <script>
-        const END_DATE_YEAR = new Date('2026-07-02T07:00:00'); 
-        const START_DATE_YEAR = new Date('2025-08-31T00:00:00'); 
-        const TOTAL_SCHOOL_DAYS = 180;
+    <!-- البطاقة الثانية: الأيام المكتملة -->
+    <div class="card blue">
+        <div class="card-title">الأيام الدراسية المكتملة</div>
+        <div class="sub-text">مضى من الدراسة:</div>
+        <div class="full-stat" id="completed-days">131 / 180</div>
+        <div class="sub-text">يوم دراسي فعلي مر حتى الآن</div>
+    </div>
 
-        const holidays = [
-            { start: new Date('2025-09-23T00:00:00'), end: new Date('2025-09-23T23:59:59') },
-            { start: new Date('2025-10-12T00:00:00'), end: new Date('2025-10-12T23:59:59') },
-            { start: new Date('2025-11-21T00:00:00'), end: new Date('2025-11-29T23:59:59') }, 
-            { start: new Date('2025-12-11T00:00:00'), end: new Date('2025-12-14T23:59:59') },
-            { start: new Date('2026-01-09T00:00:00'), end: new Date('2026-01-17T23:59:59') },
-            { start: new Date('2026-02-22T00:00:00'), end: new Date('2026-02-22T23:59:59') },
-            { start: new Date('2026-03-06T00:00:00'), end: new Date('2026-03-28T23:59:59') },
-            { start: new Date('2026-05-15T00:00:00'), end: new Date('2026-06-01T23:59:59') }
-        ];
+    <!-- البطاقة الثالثة: أيام الدراسة المتبقية -->
+    <div class="card orange" id="card-study">
+        <div class="side-circle">
+            <span class="label">باقي</span>
+            <span class="val" id="circle-study-days">--</span>
+        </div>
+        <div class="card-title">الأيام الدراسية المتبقية</div>
+        <div class="split-grid">
+            <!-- اليمين: أيام -->
+            <div class="split-box">
+                <span class="unit">أيام</span>
+                <span class="number" id="study-days-rem">0</span>
+            </div>
+            <!-- الوسط: أسابيع -->
+            <div class="split-box">
+                <span class="unit">أسابيع</span>
+                <span class="number" id="study-weeks">0</span>
+            </div>
+            <!-- اليسار: شهور -->
+            <div class="split-box">
+                <span class="unit">شهور</span>
+                <span class="number" id="study-months">0</span>
+            </div>
+        </div>
+        <div class="sub-text" style="margin-top: 15px;">عدد الأيام الدراسية المتبقية (بدون إجازات)</div>
+    </div>
 
-        const isHoliday = (date, includeWeekend = true) => {
-            const dayOfWeek = date.getDay();
-            if (includeWeekend && (dayOfWeek === 5 || dayOfWeek === 6)) return true;
-            for (let holiday of holidays) {
-                const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                const s = new Date(holiday.start.getFullYear(), holiday.start.getMonth(), holiday.start.getDate());
-                const e = new Date(holiday.end.getFullYear(), holiday.end.getMonth(), holiday.end.getDate());
-                if (d >= s && d <= e) return true;
-            }
-            return false;
-        };
+</div>
 
-        const updateCountdownTotal = (countdownTotalEl) => {
-            const now = new Date();
-            const timeLeft = END_DATE_YEAR.getTime() - now.getTime();
-            const oneDayInMs = 1000 * 60 * 60 * 24;
+<script>
+    function calculateTime(totalDays) {
+        const months = Math.floor(totalDays / 30);
+        const remainingDaysAfterMonths = totalDays % 30;
+        const weeks = Math.floor(remainingDaysAfterMonths / 7);
+        const days = remainingDaysAfterMonths % 7;
+        return { months, weeks, days };
+    }
 
-            if (timeLeft <= 0) {
-                countdownTotalEl.textContent = 'انتهى العام الدراسي!';
-                return;
-            }
+    function updateDashboard() {
+        // القيم الحالية بناءً على التاريخ المذكور في النظام
+        const totalYearDays = 80;
+        const studyDaysRemaining = 49;
+        const completed = 131;
+        const target = 180;
 
-            const days = Math.floor(timeLeft / oneDayInMs);
-            if (days < 1) { 
-                const hours = Math.floor((timeLeft % oneDayInMs) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                countdownTotalEl.textContent = `متبقي ${hours} ساعة، ${minutes} دقيقة، ${seconds} ثانية`;
-            } else {
-                countdownTotalEl.textContent = `متبقي ${days} يوم`;
-            }
-        };
+        // تحديث البطاقة الأولى (نهاية العام)
+        document.getElementById('circle-total-days').innerText = totalYearDays;
+        const totalTime = calculateTime(totalYearDays);
+        document.getElementById('total-months').innerText = totalTime.months;
+        document.getElementById('total-weeks').innerText = totalTime.weeks;
+        document.getElementById('total-days-rem').innerText = totalTime.days;
 
-        const updateSchoolDayCalculations = (schoolDayCounterEl, remainingSchoolDaysEl) => {
-            const now = new Date();
-            let pastSchoolDays = 0;
-            
-            if (now < START_DATE_YEAR) {
-                schoolDayCounterEl.textContent = '0';
-                remainingSchoolDaysEl.textContent = TOTAL_SCHOOL_DAYS;
-                return;
-            }
+        // تحديث البطاقة الثانية (المكتملة)
+        document.getElementById('completed-days').innerText = `${completed} / ${target}`;
 
-            const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            let checkDate = new Date(START_DATE_YEAR);
-            
-            while (checkDate <= todayMidnight) {
-                if (!isHoliday(checkDate)) pastSchoolDays++;
-                checkDate.setDate(checkDate.getDate() + 1);
-            }
+        // تحديث البطاقة الثالثة (الدراسية المتبقية)
+        document.getElementById('circle-study-days').innerText = studyDaysRemaining;
+        const studyTime = calculateTime(studyDaysRemaining);
+        document.getElementById('study-months').innerText = studyTime.months;
+        document.getElementById('study-weeks').innerText = studyTime.weeks;
+        document.getElementById('study-days-rem').innerText = studyTime.days;
+    }
 
-            schoolDayCounterEl.textContent = pastSchoolDays;
-            
-            const remaining = Math.max(0, TOTAL_SCHOOL_DAYS - pastSchoolDays);
-            remainingSchoolDaysEl.textContent = remaining;
-        };
+    window.onload = updateDashboard;
+</script>
 
-        const applyTheme = (isDark, body, toggleButton) => {
-            const lucideIcons = lucide.icons;
-            if (isDark) {
-                body.classList.add('dark-mode');
-                toggleButton.innerHTML = lucideIcons['sun'] ? lucideIcons['sun'].toMarkup() : ''; 
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-mode');
-                toggleButton.innerHTML = lucideIcons['moon'] ? lucideIcons['moon'].toMarkup() : '';
-                localStorage.setItem('theme', 'light');
-            }
-        };
-
-        const setupDarkMode = () => {
-            lucide.createIcons(); 
-            const body = document.body;
-            const toggleButton = document.getElementById('theme-toggle');
-            const savedTheme = localStorage.getItem('theme');
-            let isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            applyTheme(isDark, body, toggleButton);
-            toggleButton.addEventListener('click', () => applyTheme(!body.classList.contains('dark-mode'), body, toggleButton));
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setupDarkMode(); 
-            const countdownTotalEl = document.getElementById('countdown-timer-total');
-            const schoolDayCounterEl = document.getElementById('school-day-counter');
-            const remainingSchoolDaysEl = document.getElementById('remaining-school-days');
-            
-            updateCountdownTotal(countdownTotalEl);
-            updateSchoolDayCalculations(schoolDayCounterEl, remainingSchoolDaysEl);
-            
-            setInterval(() => updateCountdownTotal(countdownTotalEl), 1000);
-        });
-    </script>
 </body>
 </html>
